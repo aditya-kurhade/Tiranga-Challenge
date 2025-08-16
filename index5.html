@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Tiranga Celebration Quiz</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #ff9933, #fff, #138808);
+      color: #000080;
+      cursor: pointer;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 48px;
+      animation: glow 2s alternate infinite;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 2px 2px 5px #fff, 0 0 10px #000080; }
+      to { text-shadow: 2px 2px 20px #ff9933, 0 0 30px #138808; }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: rgba(255,255,255,0.95);
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    .question, .fact, .quote {
+      font-size: 22px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .options {
+      list-style: none;
+      padding: 0;
+      text-align: center;
+    }
+
+    .options li {
+      margin: 10px auto;
+      background: #f0f0f0;
+      padding: 12px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      width: 60%;
+    }
+
+    .options li:hover {
+      background: #ff9933;
+      color: #fff;
+    }
+
+    .score {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .completion {
+      display: none;
+      font-size: 24px;
+      margin-top: 30px;
+      font-weight: bold;
+      text-align: center;
+      animation: glow 2s alternate infinite;
+    }
+
+    .next {
+      font-size: 22px;
+      text-decoration: underline;
+      cursor: pointer;
+      color: #000080;
+      margin: 40px 0;
+      text-align: center;
+      animation: blink 1.2s infinite;
+      display: none;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* Drag & Drop Puzzle */
+    .puzzle-container {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+      gap: 10px;
+    }
+
+    .stripe {
+      width: 80px;
+      height: 40px;
+      border-radius: 5px;
+      cursor: grab;
+    }
+
+    #stripe1 { background: #ff9933; }
+    #stripe2 { background: #ffffff; }
+    #stripe3 { background: #138808; }
+
+    canvas {
+      position: fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      z-index:-1;
+      pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎉 Code Tiranga Celebration 🇮🇳</h1>
+
+<div class="container">
+  <!-- Quiz Section -->
+  <div id="quizSection">
+    <div class="question" id="question">Question text</div>
+    <ul class="options" id="options"></ul>
+    <div class="score" id="score">Score: 0</div>
+  </div>
+
+  <!-- Puzzle Section -->
+  <div class="puzzle-section">
+    <h2 style="text-align:center;">Arrange the Tiranga Stripes Correctly</h2>
+    <div class="puzzle-container" id="puzzleContainer">
+      <div class="stripe" id="stripe1" draggable="true"></div>
+      <div class="stripe" id="stripe2" draggable="true"></div>
+      <div class="stripe" id="stripe3" draggable="true"></div>
+    </div>
+  </div>
+
+  <!-- Facts & Quotes -->
+  <div class="fact" id="fact"></div>
+  <div class="quote" id="quote"></div>
+
+  <!-- Completion -->
+  <div class="completion" id="completion">🎉 Congratulations! You completed the celebration! 🇮🇳</div>
+  <div class="next" id="next" onclick="window.location.href='index1.html'">Restart Celebration ➝</div>
+</div>
+
+<canvas id="particles"></canvas>
+<canvas id="fireworks"></canvas>
+
+<script>
+  // ========== Quiz Feature ==========
+  const quizData = [
+    {
+      question: "What is the color order of the Indian flag from top to bottom?",
+      options: ["Saffron, White, Green", "Green, White, Saffron", "White, Saffron, Green", "Saffron, Green, White"],
+      answer: 0
+    },
+    {
+      question: "Which chakra is in the center of the Tiranga?",
+      options: ["Dharma Chakra", "Ashoka Chakra", "Peace Chakra", "Innovation Chakra"],
+      answer: 1
+    },
+    {
+      question: "India gained independence in which year?",
+      options: ["1947", "1950", "1945", "1960"],
+      answer: 0
+    },
+    {
+      question: "Which programming language is popularly used for web animations?",
+      options: ["Python", "JavaScript", "C++", "Java"],
+      answer: 1
+    }
+  ];
+
+  const facts = [
+    "India is the world's largest democracy.",
+    "The Indian flag was adopted on 22 July 1947.",
+    "The Ashoka Chakra has 24 spokes representing progress.",
+    "India is home to the world's largest postal network."
+  ];
+
+  const quotes = [
+    "Freedom is not worth having if it does not include the freedom to make mistakes. – Gandhi",
+    "Be the change that you wish to see in the world. – Gandhi",
+    "Innovation distinguishes between a leader and a follower. – Steve Jobs",
+    "The future belongs to those who prepare for it today. – Malcolm X"
+  ];
+
+  let current = 0;
+  let score = 0;
+
+  const questionEl = document.getElementById('question');
+  const optionsEl = document.getElementById('options');
+  const scoreEl = document.getElementById('score');
+  const completionEl = document.getElementById('completion');
+  const nextEl = document.getElementById('next');
+  const factEl = document.getElementById('fact');
+  const quoteEl = document.getElementById('quote');
+
+  function loadQuestion(){
+    const q = quizData[current];
+    questionEl.textContent = q.question;
+    optionsEl.innerHTML = '';
+    q.options.forEach((opt,index)=>{
+      const li = document.createElement('li');
+      li.textContent = opt;
+      li.onclick = ()=>selectAnswer(index);
+      optionsEl.appendChild(li);
+    });
+    displayRandomFactQuote();
+  }
+
+  function selectAnswer(index){
+    const correct = quizData[current].answer;
+    if(index === correct){
+      score++;
+      createFirework(window.innerWidth/2, window.innerHeight/2);
+    }
+    scoreEl.textContent = `Score: ${score}`;
+    current++;
+    if(current < quizData.length){
+      loadQuestion();
+    } else {
+      quizEnd();
+    }
+  }
+
+  function quizEnd(){
+    document.getElementById('quizSection').style.display = 'none';
+    completionEl.style.display = 'block';
+    nextEl.style.display = 'block';
+  }
+
+  function displayRandomFactQuote(){
+    factEl.textContent = facts[Math.floor(Math.random()*facts.length)];
+    quoteEl.textContent = quotes[Math.floor(Math.random()*quotes.length)];
+  }
+
+  loadQuestion();
+
+  // ========== Drag & Drop Puzzle ==========
+  const puzzleContainer = document.getElementById('puzzleContainer');
+  let dragged = null;
+
+  puzzleContainer.addEventListener('dragstart', e => {
+    dragged = e.target;
+  });
+
+  puzzleContainer.addEventListener('dragover', e => e.preventDefault());
+
+  puzzleContainer.addEventListener('drop', e => {
+    e.preventDefault();
+    if(e.target.classList.contains('stripe') && dragged !== e.target){
+      let nodes = Array.from(puzzleContainer.children);
+      let draggedIndex = nodes.indexOf(dragged);
+      let targetIndex = nodes.indexOf(e.target);
+      if(draggedIndex < targetIndex){
+        puzzleContainer.insertBefore(dragged, e.target.nextSibling);
+      } else {
+        puzzleContainer.insertBefore(dragged, e.target);
+      }
+      checkPuzzle();
+    }
+  });
+
+  function checkPuzzle(){
+    const stripes = Array.from(puzzleContainer.children);
+    if(stripes[0].id === 'stripe1' && stripes[1].id === 'stripe2' && stripes[2].id === 'stripe3'){
+      createFirework(window.innerWidth/2, window.innerHeight/2);
+      alert("Tiranga Flag Correctly Arranged! 🎉");
+    }
+  }
+
+  // ========== Particles ==========
+  const partCanvas = document.getElementById('particles');
+  const partCtx = partCanvas.getContext('2d');
+  partCanvas.width = window.innerWidth;
+  partCanvas.height = window.innerHeight;
+
+  const colors = ["#ff9933","#ffffff","#138808"];
+  const particles = [];
+  const particleCount = 150;
+
+  for(let i=0;i<particleCount;i++){
+    particles.push({
+      x: Math.random()*partCanvas.width,
+      y: Math.random()*partCanvas.height,
+      radius: Math.random()*6+3,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      speedX: (Math.random()-0.5)*1,
+      speedY: Math.random()*1 +0.5
+    });
+  }
+
+  function animateParticles(){
+    partCtx.clearRect(0,0,partCanvas.width,partCanvas.height);
+    particles.forEach(p=>{
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if(p.y>partCanvas.height)p.y=-p.radius;
+      if(p.x>partCanvas.width)p.x=0;
+      if(p.x<0)p.x=partCanvas.width;
+      partCtx.beginPath();
+      partCtx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+      partCtx.fillStyle = p.color;
+      partCtx.fill();
+    });
+    requestAnimationFrame(animateParticles);
+  }
+  animateParticles();
+
+  window.addEventListener('resize',()=>{
+    partCanvas.width = window.innerWidth;
+    partCanvas.height = window.innerHeight;
+    fireCanvas.width = window.innerWidth;
+    fireCanvas.height = window.innerHeight;
+  });
+
+  // ========== Fireworks ==========
+  const fireCanvas = document.getElementById('fireworks');
+  const fireCtx = fireCanvas.getContext('2d');
+  fireCanvas.width = window.innerWidth;
+  fireCanvas.height = window.innerHeight;
+
+  class FireworkParticle {
+    constructor(x,y,color){
+      this.x=x;
+      this.y=y;
+      this.color=color;
+      this.radius=Math.random()*3+2;
+      this.angle=Math.random()*2*Math.PI;
+      this.speed=Math.random()*5+2;
+      this.life=100;
+      this.opacity=1;
+    }
+    update(){
+      this.x+=Math.cos(this.angle)*this.speed;
+      this.y+=Math.sin(this.angle)*this.speed;
+      this.life--;
+      this.opacity=this.life/100;
+    }
+    draw(){
+      fireCtx.beginPath();
+      fireCtx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+      fireCtx.fillStyle=`rgba(${this.color},${this.opacity})`;
+      fireCtx.fill();
+    }
+  }
+
+  let fireworks = [];
+  function createFirework(x,y){
+    const colors = ["255,153,51","19,136,8","0,0,128","255,255,255"];
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    for(let i=0;i<50;i++){
+      fireworks.push(new FireworkParticle(x,y,color));
+    }
+  }
+
+  function animateFireworks(){
+    fireCtx.clearRect(0,0,fireCanvas.width,fireCanvas.height);
+    fireworks.forEach(p=>{p.update(); p.draw();});
+    fireworks = fireworks.filter(p=>p.life>0);
+    requestAnimationFrame(animateFireworks);
+  }
+  animateFireworks();
+
+  document.body.addEventListener('click',(e)=>{
+    createFirework(e.clientX,e.clientY);
+  });
+
+</script>
+</body>
+</html>

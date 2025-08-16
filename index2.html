@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Celebration Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      overflow-x: hidden;
+      background: linear-gradient(to bottom, #ff9933, #fff, #138808);
+      color: #000080;
+      cursor: pointer;
+    }
+
+    h1 {
+      font-size: 50px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 50px;
+      animation: glow 2s alternate infinite;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 2px 2px 5px #fff, 0 0 10px #000080; }
+      to { text-shadow: 2px 2px 20px #ff9933, 0 0 30px #138808; }
+    }
+
+    .content {
+      max-width: 900px;
+      margin: 40px auto;
+      font-size: 20px;
+      line-height: 1.6;
+      text-align: center;
+      animation: fadeIn 2s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .fun-facts {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px 40px;
+      border-radius: 20px;
+      margin: 40px auto;
+      max-width: 800px;
+      text-align: left;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 1s ease;
+    }
+
+    .fun-facts.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .fun-facts h2 {
+      color: #138808;
+      font-size: 28px;
+      margin-top: 0;
+    }
+
+    .fun-facts ul {
+      padding-left: 20px;
+      font-size: 18px;
+    }
+
+    .next {
+      font-size: 22px;
+      text-decoration: underline;
+      cursor: pointer;
+      color: #000080;
+      margin: 50px 0;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎉 Code Tiranga Celebration! 🇮🇳</h1>
+
+  <div class="content">
+    Welcome to the ultimate Independence Day celebration for coders!  
+    Click anywhere to generate fireworks and enjoy interactive animations!  
+    Scroll down to discover fun facts, inspiring messages, and surprises as you celebrate 79 years of freedom.
+  </div>
+
+  <div class="fun-facts" id="fact1">
+    <h2>Did You Know? 🇮🇳</h2>
+    <ul>
+      <li>India is the world’s largest democracy with over 1.4 billion people.</li>
+      <li>The Tiranga flag was adopted on 22nd July 1947.</li>
+      <li>The Ashoka Chakra has 24 spokes representing justice and progress.</li>
+      <li>India celebrates Independence Day on 15th August with parades and cultural events.</li>
+    </ul>
+  </div>
+
+  <div class="fun-facts" id="fact2">
+    <h2>Fun Facts for Coders 💻</h2>
+    <ul>
+      <li>India has one of the largest populations of programmers in the world.</li>
+      <li>Tech startups celebrate creative freedom along with Independence Day.</li>
+      <li>Many coders create fun interactive projects to honor the Tiranga.</li>
+    </ul>
+  </div>
+
+  <div class="next" onclick="window.location.href='index3.html'">Click here to continue the celebration ➝</div>
+
+  <canvas id="fireworks"></canvas>
+
+  <script>
+    // Fireworks
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.radius = Math.random() * 3 + 2;
+        this.angle = Math.random() * 2 * Math.PI;
+        this.speed = Math.random() * 5 + 2;
+        this.life = 100;
+        this.opacity = 1;
+      }
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        this.life--;
+        this.opacity = this.life / 100;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color},${this.opacity})`;
+        ctx.fill();
+      }
+    }
+
+    let particles = [];
+
+    function createFirework(x, y) {
+      const colors = ["255,153,51","19,136,8","0,0,128","255,255,255"];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      for (let i = 0; i < 50; i++) {
+        particles.push(new Particle(x, y, color));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      particles = particles.filter(p => p.life > 0);
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Generate fireworks on click
+    document.body.addEventListener('click', (e) => {
+      createFirework(e.clientX, e.clientY);
+    });
+
+    // Reveal fun facts on scroll
+    const facts = document.querySelectorAll('.fun-facts');
+    window.addEventListener('scroll', () => {
+      facts.forEach(fact => {
+        const rect = fact.getBoundingClientRect();
+        if(rect.top < window.innerHeight - 100){
+          fact.classList.add('visible');
+        }
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>

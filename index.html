@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiranga Flag with Fireworks</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      cursor: pointer; /* indicates clickable */
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1; /* background */
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .flag {
+      width: 300px;
+      height: 200px;
+      position: relative;
+      animation: wave 2s infinite ease-in-out;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .stripe {
+      height: 33.33%;
+      width: 100%;
+    }
+
+    .saffron { background: #ff9933; }
+    .white {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .green { background: #138808; }
+
+    .chakra {
+      width: 60px;
+      height: 60px;
+      border: 3px solid #000080;
+      border-radius: 50%;
+      position: relative;
+      animation: spin 4s linear infinite;
+    }
+
+    .chakra div {
+      position: absolute;
+      width: 2px;
+      height: 100%;
+      background: #000080;
+      left: 50%;
+      top: 0;
+      transform-origin: center;
+    }
+
+    /* 24 spokes */
+    .chakra div:nth-child(n) {
+      transform: rotate(calc(var(--i) * 15deg));
+    }
+
+    @keyframes wave {
+      0% { transform: rotate(0deg) translateX(0); }
+      25% { transform: rotate(1deg) translateX(5px); }
+      50% { transform: rotate(0deg) translateX(0); }
+      75% { transform: rotate(-1deg) translateX(-5px); }
+      100% { transform: rotate(0deg) translateX(0); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .msg {
+      margin-top: 20px;
+      font-size: 26px;
+      font-weight: bold;
+      color: #5100ff;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #343434, 0 0 10px #138808; }
+      to { text-shadow: 0 0 20px #000080, 0 0 30px #ff9933; }
+    }
+
+    .next {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font-size: 18px;
+      color: rgb(0, 0, 0);
+      text-decoration: underline;
+      cursor: pointer;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+
+  <div class="container">
+    <div class="flag">
+      <div class="stripe saffron"></div>
+      <div class="stripe white">
+        <div class="chakra" id="chakra"></div>
+      </div>
+      <div class="stripe green"></div>
+    </div>
+    <div class="msg">Happy 79th Independence Day!</div>
+    <div class="next">Click anywhere to continue ➝</div>
+  </div>
+
+  <script>
+    // Generate 24 spokes dynamically
+    const chakra = document.getElementById("chakra");
+    for (let i = 0; i < 24; i++) {
+      let spoke = document.createElement("div");
+      spoke.style.setProperty("--i", i);
+      chakra.appendChild(spoke);
+    }
+
+    // Fireworks
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.radius = Math.random() * 3 + 2;
+        this.angle = Math.random() * 2 * Math.PI;
+        this.speed = Math.random() * 5 + 2;
+        this.life = 100;
+        this.opacity = 1;
+      }
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        this.life--;
+        this.opacity = this.life / 100;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+        ctx.fill();
+      }
+    }
+
+    let particles = [];
+    function createFirework(x, y) {
+      const colors = ["255,153,51", "19,136,8", "0,0,128"];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      for (let i = 0; i < 50; i++) {
+        particles.push(new Particle(x, y, color));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => {
+        p.update();
+        p.draw();
+        if (p.life <= 0) particles.splice(i, 1);
+      });
+      requestAnimationFrame(animate);
+    }
+
+    setInterval(() => {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height / 2;
+      createFirework(x, y);
+    }, 1000);
+
+    animate();
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // Redirect on click
+    document.body.addEventListener("click", () => {
+      window.location.href = "index2.html"; // second page file
+    });
+  </script>
+</body>
+</html>

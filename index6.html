@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>India Independence History Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #ff9933, #fff, #138808);
+      color: #000080;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 48px;
+      animation: glow 2s alternate infinite;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 2px 2px 5px #fff, 0 0 10px #000080; }
+      to { text-shadow: 2px 2px 20px #ff9933, 0 0 30px #138808; }
+    }
+
+    .game-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: rgba(255,255,255,0.95);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    .instruction {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .event-list, .timeline {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .event, .slot {
+      padding: 12px 20px;
+      background: #f0f0f0;
+      border-radius: 12px;
+      cursor: grab;
+      min-width: 150px;
+      text-align: center;
+      user-select: none;
+      transition: 0.3s;
+    }
+
+    .event:hover { background: #ff9933; color: #fff; }
+
+    .slot { border: 2px dashed #000080; min-height: 50px; cursor: pointer; }
+
+    .score { font-size: 22px; font-weight: bold; margin-top: 20px; }
+
+    .completion {
+      display: none;
+      font-size: 26px;
+      font-weight: bold;
+      margin-top: 30px;
+      animation: glow 2s alternate infinite;
+    }
+
+    .next {
+      font-size: 22px;
+      text-decoration: underline;
+      cursor: pointer;
+      color: #000080;
+      margin: 30px 0;
+      display: none;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    canvas { position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events:none; }
+  </style>
+</head>
+<body>
+
+<h1>📜 India Independence History Game 🇮🇳</h1>
+
+<div class="game-container">
+  <div class="instruction">Drag the events to place them in the correct chronological order:</div>
+
+  <div class="event-list" id="events"></div>
+  <div class="timeline" id="timeline">
+    <div class="slot" data-index="0"></div>
+    <div class="slot" data-index="1"></div>
+    <div class="slot" data-index="2"></div>
+    <div class="slot" data-index="3"></div>
+    <div class="slot" data-index="4"></div>
+  </div>
+
+  <button id="checkBtn" style="padding:10px 20px; font-size:18px; margin-top:20px;">Check Answers</button>
+
+  <div class="score" id="score">Score: 0</div>
+  <div class="completion" id="completion">🎉 You arranged the events correctly! Celebrate Freedom! 🇮🇳</div>
+  <div class="next" id="next" onclick="window.location.href='index1.html'">Restart Celebration ➝</div>
+</div>
+
+<canvas id="fireworks"></canvas>
+
+<script>
+  // ====== Game Data ======
+  const eventsData = [
+    { text: "Indian National Congress Founded", year: 1885 },
+    { text: "Salt March", year: 1930 },
+    { text: "Quit India Movement", year: 1942 },
+    { text: "India Gains Independence", year: 1947 },
+    { text: "Constitution Adopted", year: 1950 }
+  ];
+
+  let score = 0;
+
+  // Shuffle events
+  const shuffledEvents = [...eventsData].sort(() => Math.random() - 0.5);
+
+  const eventsEl = document.getElementById('events');
+  const timelineEl = document.getElementById('timeline');
+  const scoreEl = document.getElementById('score');
+  const completionEl = document.getElementById('completion');
+  const nextEl = document.getElementById('next');
+  const checkBtn = document.getElementById('checkBtn');
+
+  // Create event elements
+  shuffledEvents.forEach((ev, idx) => {
+    const div = document.createElement('div');
+    div.className = 'event';
+    div.textContent = ev.text;
+    div.draggable = true;
+    div.dataset.index = idx;
+    eventsEl.appendChild(div);
+  });
+
+  let dragged = null;
+
+  document.addEventListener('dragstart', e => {
+    if(e.target.classList.contains('event')){
+      dragged = e.target;
+    }
+  });
+
+  document.querySelectorAll('.slot').forEach(slot => {
+    slot.addEventListener('dragover', e => e.preventDefault());
+    slot.addEventListener('drop', e => {
+      if(dragged){
+        slot.textContent = dragged.textContent;
+        slot.dataset.eventIndex = dragged.dataset.index;
+        dragged.style.display = 'none';
+        dragged = null;
+      }
+    });
+  });
+
+  // ====== Check Answers ======
+  checkBtn.addEventListener('click', () => {
+    let correct = 0;
+    document.querySelectorAll('.slot').forEach((slot, i) => {
+      if(slot.dataset.eventIndex != undefined){
+        const eventIdx = parseInt(slot.dataset.eventIndex);
+        if(eventsData[eventIdx].year === eventsData[i].year){
+          correct++;
+          createFirework(slot.getBoundingClientRect().left+75, slot.getBoundingClientRect().top+25);
+        }
+      }
+    });
+
+    score = correct;
+    scoreEl.textContent = `Score: ${score}`;
+
+    if(correct === eventsData.length){
+      completionEl.style.display = 'block';
+      nextEl.style.display = 'block';
+    } else {
+      alert("Some events are not in correct order. Try again!");
+    }
+  });
+
+  // ====== Fireworks ======
+  const fireCanvas = document.getElementById('fireworks');
+  const fireCtx = fireCanvas.getContext('2d');
+  fireCanvas.width = window.innerWidth;
+  fireCanvas.height = window.innerHeight;
+
+  class FireworkParticle {
+    constructor(x,y,color){
+      this.x=x; this.y=y; this.color=color;
+      this.radius=Math.random()*3+2;
+      this.angle=Math.random()*2*Math.PI;
+      this.speed=Math.random()*5+2;
+      this.life=100; this.opacity=1;
+    }
+    update(){
+      this.x+=Math.cos(this.angle)*this.speed;
+      this.y+=Math.sin(this.angle)*this.speed;
+      this.life--;
+      this.opacity=this.life/100;
+    }
+    draw(){
+      fireCtx.beginPath();
+      fireCtx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+      fireCtx.fillStyle=`rgba(${this.color},${this.opacity})`;
+      fireCtx.fill();
+    }
+  }
+
+  let fireworks = [];
+  function createFirework(x,y){
+    const colors = ["255,153,51","19,136,8","0,0,128","255,255,255"];
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    for(let i=0;i<50;i++){
+      fireworks.push(new FireworkParticle(x,y,color));
+    }
+  }
+
+  function animateFireworks(){
+    fireCtx.clearRect(0,0,fireCanvas.width,fireCanvas.height);
+    fireworks.forEach(p=>{p.update();p.draw();});
+    fireworks = fireworks.filter(p=>p.life>0);
+    requestAnimationFrame(animateFireworks);
+  }
+  animateFireworks();
+
+  window.addEventListener('resize',()=>{
+    fireCanvas.width=window.innerWidth;
+    fireCanvas.height=window.innerHeight;
+  });
+
+  document.body.addEventListener('click',(e)=>{
+    createFirework(e.clientX,e.clientY);
+  });
+
+</script>
+</body>
+</html>

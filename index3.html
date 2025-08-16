@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Tiranga Tribute</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #138808, #fff, #ff9933);
+      color: #000080;
+      cursor: pointer;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 48px;
+      animation: glow 2s alternate infinite;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 2px 2px 5px #fff, 0 0 10px #000080; }
+      to { text-shadow: 2px 2px 20px #ff9933, 0 0 30px #138808; }
+    }
+
+    .tribute {
+      max-width: 900px;
+      margin: 50px auto;
+      font-size: 20px;
+      line-height: 1.6;
+      text-align: center;
+      background: rgba(255,255,255,0.9);
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    .quotes {
+      margin: 40px auto;
+      max-width: 800px;
+      text-align: left;
+      background: rgba(255,255,255,0.9);
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    .quotes h2 {
+      color: #ff9933;
+      font-size: 28px;
+      margin-top: 0;
+    }
+
+    .quotes ul {
+      font-size: 18px;
+      padding-left: 20px;
+    }
+
+    .next {
+      font-size: 22px;
+      text-decoration: underline;
+      cursor: pointer;
+      color: #000080;
+      margin: 50px 0;
+      text-align: center;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎆 Code Tiranga Tribute 🇮🇳</h1>
+
+  <div class="tribute">
+    Today we honor the visionaries and freedom fighters who gave us independence.  
+    Let their courage inspire us to innovate, code, and create a better future for our country.  
+    This page celebrates creativity, patriotism, and the spirit of innovation together.
+  </div>
+
+  <div class="quotes">
+    <h2>Inspirational Quotes 🇮🇳</h2>
+    <ul>
+      <li>"Freedom is not worth having if it does not include the freedom to make mistakes." – Mahatma Gandhi</li>
+      <li>"Be the change that you wish to see in the world." – Mahatma Gandhi</li>
+      <li>"The future belongs to those who prepare for it today." – Malcolm X</li>
+      <li>"Innovation distinguishes between a leader and a follower." – Steve Jobs</li>
+    </ul>
+  </div>
+
+  <div class="next" onclick="window.location.href='index4.html'">Click here to continue the celebration ➝</div>
+
+  <canvas id="particles"></canvas>
+
+  <script>
+    // Floating Tiranga particles
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ["#ff9933","#ffffff","#138808"];
+    const particles = [];
+    const particleCount = 120;
+
+    for(let i=0;i<particleCount;i++){
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random()*6 + 3,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        speedX: (Math.random()-0.5)*1,
+        speedY: Math.random()*1 + 0.5
+      });
+    }
+
+    function animateParticles(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        if(p.y > canvas.height) p.y = -p.radius;
+        if(p.x > canvas.width) p.x = 0;
+        if(p.x < 0) p.x = canvas.width;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // Firework effect on click
+    class FireworkParticle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.radius = Math.random()*3 +2;
+        this.angle = Math.random()*2*Math.PI;
+        this.speed = Math.random()*5 +2;
+        this.life = 100;
+        this.opacity = 1;
+      }
+      update() {
+        this.x += Math.cos(this.angle)*this.speed;
+        this.y += Math.sin(this.angle)*this.speed;
+        this.life--;
+        this.opacity = this.life/100;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);
+        ctx.fillStyle = `rgba(${this.color},${this.opacity})`;
+        ctx.fill();
+      }
+    }
+
+    let fireworks = [];
+
+    function createFirework(x, y) {
+      const colors = ["255,153,51","19,136,8","0,0,128","255,255,255"];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      for(let i=0;i<50;i++){
+        fireworks.push(new FireworkParticle(x,y,color));
+      }
+    }
+
+    function animateFireworks(){
+      fireworks.forEach(p => { p.update(); p.draw(); });
+      fireworks = fireworks.filter(p => p.life>0);
+      requestAnimationFrame(animateFireworks);
+    }
+
+    animateFireworks();
+
+    document.body.addEventListener('click',(e)=>{
+      createFirework(e.clientX,e.clientY);
+    });
+
+    window.addEventListener('resize',()=>{
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
