@@ -3,60 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code Tiranga Gallery</title>
+  <title>Interactive Celebration Page</title>
   <style>
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
-      background: linear-gradient(to bottom, #ff9933, #fff, #138808);
-      color: #000080;
-      cursor: pointer;
       overflow-x: hidden;
-      position: relative;
+      cursor: pointer;
+      background: #ffffff; /* white background */
+      color: #000080;
+    }
+
+    .page-wrapper {
+      width: 100%;
+      height: 100vh;
+      transform: translateX(100%); /* start off-screen right */
+      animation: slideIn 0.8s forwards; /* slide in */
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+    @keyframes slideIn {
+      to { transform: translateX(0); }
     }
 
     h1 {
+      font-size: 60px;
+      font-weight: bold;
       text-align: center;
-      margin-top: 50px;
-      font-size: 48px;
-      animation: glow 2s alternate infinite;
+      margin-bottom: 40px;
+      color: #ff9933;
+      
     }
 
-    @keyframes glow {
-      from { text-shadow: 2px 2px 5px #fff, 0 0 10px #000080; }
-      to { text-shadow: 2px 2px 20px #ff9933, 0 0 30px #138808; }
+    .content {
+      max-width: 900px;
+      margin: 0 auto 40px auto;
+      font-size: 22px;
+      line-height: 1.8;
+      text-align: center;
     }
 
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
-      gap: 20px;
-      max-width: 1000px;
-      margin: 50px auto;
+    .fun-facts-row {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
     }
 
-    .project {
-      background: rgba(255,255,255,0.9);
+    .fun-facts {
+      background: #f9f9f9;
+      padding: 30px 40px;
       border-radius: 20px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
-      transition: transform 0.3s;
-      cursor: pointer;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      text-align: left;
     }
 
-    .project:hover {
-      transform: scale(1.05);
+    .fun-facts h2 {
+      color: #138808;
+      font-size: 28px;
+      margin-top: 0;
+      margin-bottom: 15px;
     }
 
-    .project-code {
-      display: none;
-      margin-top: 15px;
-      background: #f0f0f0;
-      padding: 10px;
-      border-radius: 10px;
-      font-family: monospace;
-      white-space: pre-wrap;
+    .fun-facts ul {
+      padding-left: 20px;
+      font-size: 18px;
     }
 
     .next {
@@ -64,8 +78,9 @@
       text-decoration: underline;
       cursor: pointer;
       color: #000080;
-      margin: 50px 0;
       text-align: center;
+      display: block;
+      margin: 0 auto 30px auto;
       animation: blink 1.2s infinite;
     }
 
@@ -75,101 +90,138 @@
 
     canvas {
       position: fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      z-index:-1;
-      pointer-events:none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
+  <div class="page-wrapper">
+    <h1>Celebrate Freedom with Pride! 🎊</h1>
+    <audio id="bgMusic" loop>
+  <source src="audio/Lehra.mp3" type="audio/mp3">
+  Your browser does not support the audio element.
+</audio>
 
-<h1>💻 Code Tiranga Gallery 🇮🇳</h1>
-
-<div class="gallery">
-  <div class="project" onclick="toggleCode(this)">
-    <h3>Interactive Tiranga Flag</h3>
-    <div class="project-code">
-      HTML + CSS + JS code for waving Tiranga flag with chakra animation.
+    <div class="content">
+      Explore amazing facts about coding and India while enjoying interactive fireworks! Click anywhere to celebrate and scroll to see more.
     </div>
+
+    <div class="fun-facts-row">
+      <div class="fun-facts">
+        <h2>Did You Know?</h2>
+        <ul>
+          <li>India’s first computer, the Tata ACE, was introduced in 1955.</li>
+          <li>Many IT companies participate in Independence Day celebrations.</li>
+          <li>The Tiranga inspires creativity in coding projects nationwide.</li>
+        </ul>
+      </div>
+
+      <div class="fun-facts">
+        <h2>Fun Facts for Coders 💻</h2>
+        <ul>
+          <li>Hackathons often run on Independence Day themes.</li>
+          <li>Coding competitions celebrate freedom and innovation.</li>
+          <li>Interactive web pages with fireworks are popular projects.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="next" onclick="window.location.href='index5.html'">
+      Click here to continue ➝
+    </div>
+
+    <canvas id="fireworks"></canvas>
   </div>
 
-  <div class="project" onclick="toggleCode(this)">
-    <h3>Independence Day Fireworks</h3>
-    <div class="project-code">
-      JS code to generate colorful fireworks at random positions or on click.
-    </div>
-  </div>
+  <script>
+    // Fireworks
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-  <div class="project" onclick="toggleCode(this)">
-    <h3>Quiz Challenge</h3>
-    <div class="project-code">
-      JS quiz app: questions about India and coding challenges with score tracking.
-    </div>
-  </div>
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.radius = Math.random() * 3 + 2;
+        this.angle = Math.random() * 2 * Math.PI;
+        this.speed = Math.random() * 5 + 2;
+        this.life = 100;
+        this.opacity = 1;
+      }
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        this.life--;
+        this.opacity = this.life / 100;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color},${this.opacity})`;
+        ctx.fill();
+      }
+    }
 
-  <div class="project" onclick="toggleCode(this)">
-    <h3>Inspirational Quotes</h3>
-    <div class="project-code">
-      JS code displays quotes randomly with glowing text and animation.
-    </div>
-  </div>
-</div>
+    let particles = [];
 
-<div class="next" onclick="window.location.href='index5.html'">Click here to continue ➝</div>
+    function createFirework(x, y) {
+      const colors = ["255,153,51","19,136,8","0,0,128","255,255,255"];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      for (let i = 0; i < 50; i++) {
+        particles.push(new Particle(x, y, color));
+      }
+    }
 
-<canvas id="particles"></canvas>
+    function animate() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      particles = particles.filter(p => p.life > 0);
+      requestAnimationFrame(animate);
+    }
 
-<script>
-  function toggleCode(el){
-    const code = el.querySelector('.project-code');
-    code.style.display = code.style.display==='block'?'none':'block';
-  }
+    animate();
 
-  // Floating Tiranga particles
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const colors = ["#ff9933","#ffffff","#138808"];
-  const particles = [];
-  const particleCount = 120;
-
-  for(let i=0;i<particleCount;i++){
-    particles.push({
-      x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height,
-      radius: Math.random()*6+3,
-      color: colors[Math.floor(Math.random()*colors.length)],
-      speedX: (Math.random()-0.5)*1,
-      speedY: Math.random()*1 +0.5
+    document.body.addEventListener('click', (e) => {
+      createFirework(e.clientX, e.clientY);
     });
-  }
 
-  function animateParticles(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(p=>{
-      p.x += p.speedX;
-      p.y += p.speedY;
-      if(p.y>canvas.height)p.y=-p.radius;
-      if(p.x>canvas.width)p.x=0;
-      if(p.x<0)p.x=canvas.width;
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-      ctx.fillStyle = p.color;
-      ctx.fill();
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     });
-    requestAnimationFrame(animateParticles);
-  }
-  animateParticles();
 
-  window.addEventListener('resize',()=>{
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
+
+    const music = document.getElementById("bgMusic");
+
+  // Restore last state
+  const wasPlaying = localStorage.getItem("musicPlaying");
+  const lastTime = parseFloat(localStorage.getItem("musicTime")) || 0;
+
+  music.currentTime = lastTime; // resume at saved time
+
+  if (wasPlaying === "true") {
+    music.play().catch(err => console.log("Autoplay blocked:", err));
+  }
+
+  // Update state while playing
+  setInterval(() => {
+    localStorage.setItem("musicTime", music.currentTime);
+  }, 1000);
+
+  music.addEventListener("play", () => {
+    localStorage.setItem("musicPlaying", "true");
   });
-</script>
+  music.addEventListener("pause", () => {
+    localStorage.setItem("musicPlaying", "false");
+  });
+  </script>
 </body>
 </html>

@@ -9,14 +9,14 @@
       margin: 0;
       overflow: hidden;
       font-family: Arial, sans-serif;
-      cursor: pointer; /* indicates clickable */
+      cursor: pointer;
     }
 
     canvas {
       position: fixed;
       top: 0;
       left: 0;
-      z-index: -1; /* background */
+      z-index: -1;
     }
 
     .container {
@@ -25,6 +25,7 @@
       align-items: center;
       flex-direction: column;
       height: 100vh;
+      text-align: center;
     }
 
     .flag {
@@ -68,7 +69,6 @@
       transform-origin: center;
     }
 
-    /* 24 spokes */
     .chakra div:nth-child(n) {
       transform: rotate(calc(var(--i) * 15deg));
     }
@@ -93,29 +93,43 @@
       color: #5100ff;
     }
 
-    @keyframes glow {
-      from { text-shadow: 0 0 5px #343434, 0 0 10px #138808; }
-      to { text-shadow: 0 0 20px #000080, 0 0 30px #ff9933; }
+    .info {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #444;
+      font-style: italic;
     }
 
-    .next {
+    .nextBtn {
       position: fixed;
       bottom: 20px;
-      right: 20px;
+      left: 20px;
+      padding: 12px 25px;
       font-size: 18px;
-      color: rgb(0, 0, 0);
-      text-decoration: underline;
+      border: none;
+      border-radius: 10px;
+      background: #ff9933;
+      color: white;
+      font-weight: bold;
       cursor: pointer;
-      animation: blink 1.2s infinite;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: 0.3s;
     }
 
-    @keyframes blink {
-      50% { opacity: 0; }
+    .nextBtn:hover {
+      background: #138808;
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
   <canvas id="fireworks"></canvas>
+  
+  <!-- Background Song -->
+  <audio id="bgMusic" loop>
+    <source src="audio/Lehra.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
 
   <div class="container">
     <div class="flag">
@@ -126,8 +140,10 @@
       <div class="stripe green"></div>
     </div>
     <div class="msg">Happy 79th Independence Day!</div>
-    <div class="next">Click anywhere to continue ➝</div>
+    <div class="info">🎶 Click anywhere to start music 🎶</div>
   </div>
+
+  <button class="nextBtn" id="nextPage">Go to Next Page ➝</button>
 
   <script>
     // Generate 24 spokes dynamically
@@ -201,9 +217,28 @@
       canvas.height = window.innerHeight;
     });
 
-    // Redirect on click
+    // Start music on first click anywhere
     document.body.addEventListener("click", () => {
-      window.location.href = "index2.html"; // second page file
+      const music = document.getElementById("bgMusic");
+      if (music.paused) {
+        music.play().catch(err => console.log("Autoplay blocked:", err));
+      }
+    }, { once: true });
+
+    // Save music state in localStorage for continuity
+    const music = document.getElementById("bgMusic");
+    music.addEventListener("play", () => {
+      localStorage.setItem("musicPlaying", "true");
+    });
+    music.addEventListener("pause", () => {
+      localStorage.setItem("musicPlaying", "false");
+    });
+
+    // Next page button
+    document.getElementById("nextPage").addEventListener("click", () => {
+      if (!music.paused) localStorage.setItem("musicPlaying", "true");
+      else localStorage.setItem("musicPlaying", "false");
+      window.location.href = "index2.html";
     });
   </script>
 </body>

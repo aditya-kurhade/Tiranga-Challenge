@@ -3,382 +3,820 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code Tiranga Celebration Quiz</title>
+  <title>Great Leaders of India</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(to bottom, #ff9933, #fff, #138808);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(to bottom, #ff9933, #ffffff 50%, #138808);
+      color: #222;
+      scroll-behavior: smooth;
+      line-height: 1.6;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(to right, #ff9933, #fff, #138808);
+      padding: 12px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      z-index: 1000;
+    }
+
+    nav a {
+      margin: 0 18px;
       color: #000080;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 17px;
+      transition: color 0.3s, transform 0.2s;
+    }
+    nav a:hover {
+      color: #ff4500;
+      transform: scale1.1);
+    }
+
+    /* Dark Mode Button */
+    #darkToggle {
+      position: absolute;
+      right: 20px;
+      top: 10px;
+      padding: 6px 14px;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #000080;
+      color: white;
       cursor: pointer;
-      overflow-x: hidden;
+      transition: background 0.3s;
+    }
+    #darkToggle:hover {
+      background: #ff4500;
+    }
+
+    /* Sections */
+    section {
+      padding: 60px 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 32px;
+      color: #000080;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      border-bottom: 3px solid #ff9933;
+      display: inline-block;
+      padding-bottom: 8px;
+    }
+
+    /* Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+    .card h3 {
+      margin: 15px 0 10px;
+      color: #ff4500;
+    }
+    .card p {
+      padding: 0 10px 15px;
+      font-size: 15px;
+      color: #444;
+    }
+
+    /* Timeline */
+    .timeline {
       position: relative;
+      margin: 0 auto;
+      padding-left: 40px;
+      border-left: 3px solid #ff9933;
+    }
+    .timeline div {
+      margin: 25px 0;
+      padding-left: 25px;
+      position: relative;
+      font-size: 17px;
+      color: #333;
+    }
+    .timeline div::before {
+      content: "⚪";
+      font-size: 18px;
+      position: absolute;
+      left: -32px;
+      top: -2px;
+      color: #138808;
     }
 
-    h1 {
-      text-align: center;
-      margin-top: 30px;
-      font-size: 48px;
-      animation: glow 2s alternate infinite;
-    }
-
-    @keyframes glow {
-      from { text-shadow: 2px 2px 5px #fff, 0 0 10px #000080; }
-      to { text-shadow: 2px 2px 20px #ff9933, 0 0 30px #138808; }
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      background: rgba(255,255,255,0.95);
-      padding: 30px 40px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    }
-
-    .question, .fact, .quote {
-      font-size: 22px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .options {
-      list-style: none;
-      padding: 0;
-      text-align: center;
-    }
-
-    .options li {
-      margin: 10px auto;
-      background: #f0f0f0;
-      padding: 12px 20px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: 0.3s;
-      width: 60%;
-    }
-
-    .options li:hover {
-      background: #ff9933;
-      color: #fff;
-    }
-
-    .score {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .completion {
-      display: none;
-      font-size: 24px;
-      margin-top: 30px;
-      font-weight: bold;
-      text-align: center;
-      animation: glow 2s alternate infinite;
-    }
-
-    .next {
-      font-size: 22px;
-      text-decoration: underline;
-      cursor: pointer;
-      color: #000080;
-      margin: 40px 0;
-      text-align: center;
-      animation: blink 1.2s infinite;
-      display: none;
-    }
-
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-
-    /* Drag & Drop Puzzle */
-    .puzzle-container {
-      display: flex;
-      justify-content: center;
-      margin: 30px 0;
-      gap: 10px;
-    }
-
-    .stripe {
-      width: 80px;
-      height: 40px;
-      border-radius: 5px;
-      cursor: grab;
-    }
-
-    #stripe1 { background: #ff9933; }
-    #stripe2 { background: #ffffff; }
-    #stripe3 { background: #138808; }
-
-    canvas {
+    /* Modal Styling */
+    .modal {
+      display: none; 
       position: fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      z-index:-1;
-      pointer-events:none;
+      z-index: 2000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 14px;
+      max-width: 450px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      animation: popIn 0.3s ease;
+    }
+    .modal-content img {
+      width: 200px; height: auto;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    .modal-content h3 {
+      margin-bottom: 10px;
+      color: #ff4500;
+    }
+    .modal-content p {
+      font-size: 16px;
+      color: #333;
+    }
+    .close {
+      position: absolute;
+      top: 15px; right: 25px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #ff4500;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* Gallery */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .gallery img {
+      width: 100%;
+      border-radius: 12px;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.4s ease, box-shadow 0.3s;
+    }
+    .gallery img:hover {
+      transform: scale(1.08);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    /* Quiz */
+    .quiz {
+      text-align: center;
+      background: #f9f9f9;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+    }
+    .quiz p {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    .quiz button {
+      margin: 12px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #138808, #0a5c04);
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    .quiz button:hover { 
+      background: linear-gradient(135deg, #ff9933, #e65c00); 
+      transform: scale(1.05);
+    }
+    #quiz-result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    /* Quotes Section */
+    .quotes {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .quote-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .quote-card:hover {
+      transform: scale(1.02);
+    }
+    .quote-card p {
+      font-style: italic;
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .quote-card cite {
+      font-size: 16px;
+      color: #ff4500;
+      font-weight: bold;
+    }
+
+    /* Facts Section */
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .fact-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .fact-card:hover {
+      transform: scale(1.02);
+    }
+    .fact-card p {
+      font-size: 16px;
+      color: #333;
+    }
+    .fact-card h3 {
+      color: #ff4500;
+      margin-bottom: 10px;
+    }
+
+    /* Cultural Heritage Section */
+    .culture {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .culture-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .culture-card:hover {
+      transform: scale(1.02);
+    }
+    .culture-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .culture-card h3 {
+      color: #ff4500;
+      margin-bottom: 10px;
+    }
+    .culture-card p {
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* Independence Milestones Section */
+    .milestones {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .milestone-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    .milestone-card:hover {
+      transform: scale(1.02);
+    }
+    .milestone-card h3 {
+      color: #ff4500;
+      margin-bottom: 10px;
+    }
+    .milestone-card p {
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* National Symbols Section */
+    .symbols {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .symbol-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .symbol-card:hover {
+      transform: scale(1.02);
+    }
+    .symbol-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .symbol-card h3 {
+      color: #ff4500;
+      margin-bottom: 10px;
+    }
+    .symbol-card p {
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* Game */
+    canvas {
+      display: block;
+      margin: auto;
+      border: 4px solid #000080;
+      background: linear-gradient(to bottom, #e6f7ff, #f0f8ff);
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    /* Dark Mode */
+    body.dark {
+      background: #1c1c1c;
+      color: #eee;
+    }
+    body.dark header {
+      background: linear-gradient(to right, #333, #111, #333);
+    }
+    body.dark nav a {
+      color: #ddd;
+    }
+    body.dark .card, body.dark .quote-card, body.dark .fact-card, body.dark .culture-card, body.dark .milestone-card, body.dark .symbol-card {
+      background: #2b2b2b;
+      color: #eee;
+    }
+    body.dark .quiz {
+      background: #2c2c2c;
+    }
+    body.dark canvas {
+      background: #222;
     }
   </style>
 </head>
 <body>
+  <header>
+    <button id="darkToggle">🌙 Dark Mode</button>
+    <nav>
+      <a href="#cards">Cards</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#quotes">Quotes</a>
+      <a href="#facts">Facts</a>
+      <a href="#culture">Culture</a>
+      <a href="#milestones">Milestones</a>
+      <a href="#symbols">Symbols</a>
+      <a href="#quiz">Quiz</a>
+      <a href="#game">Game</a>
+    </nav>
+  </header>
 
-<h1>🎉 Code Tiranga Celebration 🇮🇳</h1>
+  <audio id="bgMusic" loop>
+    <source src="audio/maa.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <button id="musicBtn" 
+    style="position:fixed; bottom:80px; right:20px; padding:10px 18px; 
+           background:#007bff; color:#fff; border:none; border-radius:8px; 
+           cursor:pointer; z-index:1500;">
+    🎵 Play Music
+  </button>
 
-<div class="container">
-  <!-- Quiz Section -->
-  <div id="quizSection">
-    <div class="question" id="question">Question text</div>
-    <ul class="options" id="options"></ul>
-    <div class="score" id="score">Score: 0</div>
-  </div>
+  <!-- Cards Section -->
+  <section id="cards" style="display:flex; gap:10px; justify-content:center; align-items:center;">
+  <img src="https://i.pinimg.com/736x/61/2a/cc/612acc78d2c46e74d18cf541945fecd8.jpg" 
+       alt="Maa" 
+       style="width:350px; height:350px; object-fit:cover; border-radius:10px;" >
 
-  <!-- Puzzle Section -->
-  <div class="puzzle-section">
-    <h2 style="text-align:center;">Arrange the Tiranga Stripes Correctly</h2>
-    <div class="puzzle-container" id="puzzleContainer">
-      <div class="stripe" id="stripe1" draggable="true"></div>
-      <div class="stripe" id="stripe2" draggable="true"></div>
-      <div class="stripe" id="stripe3" draggable="true"></div>
+  <img src="https://i.pinimg.com/1200x/c9/87/2a/c9872a33a52a008238028a353aba41f2.jpg" 
+       alt="Pic2" 
+       style="width:350px; height:350px; object-fit:cover; border-radius:10px;" >
+
+  <img src="https://i.pinimg.com/736x/8d/98/6c/8d986c646b894852b18d58820ef5957e.jpg" 
+       alt="Pic3" 
+       style="width:350px; height:350px; object-fit:cover; border-radius:10px;" >
+</section>
+<section id="cards" style="display:flex; gap:10px; justify-content:center; align-items:center;">
+  <img src="https://i.pinimg.com/736x/4d/6a/be/4d6abeae0728667567a16fde93c7bfc2.jpg" 
+       alt="Maa" 
+       style="width:350px; height:350px; object-fit:cover; border-radius:10px;" >
+
+  <img src="https://i.pinimg.com/736x/96/db/5d/96db5d14d2c5447a7d7cdae8a969af59.jpg" 
+       alt="Pic2" 
+       style="width:350px; height:350px; object-fit:cover; border-radius:10px;" >
+
+  <img src="https://i.pinimg.com/736x/ac/00/2d/ac002de531afd672652cb13098c254ee.jpg" 
+       alt="Pic3" 
+       style="width:350px; height:350px; object-fit:cover; border-radius:10px;" >
+</section>
+
+
+  <!-- Timeline Section -->
+  <section id="timeline">
+    <h2>India’s Freedom Timeline 📜</h2>
+    <div class="timeline">
+      <div><strong>1857</strong> – First War of Independence</div>
+      <div><strong>1919</strong> – Jallianwala Bagh Massacre</div>
+      <div><strong>1930</strong> – Dandi March led by Gandhi</div>
+      <div><strong>1942</strong> – Quit India Movement</div>
+      <div><strong>1947</strong> – Independence of India</div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section id="gallery">
+    <h2>Gallery of Leaders 🖼️</h2>
+    <button 
+      style="background-color:#007bff; color:white; padding:10px 18px; border:none; border-radius:6px; cursor:pointer; font-size:16px;"
+      onclick="window.location.href='index7.html'">
+      View All
+    </button>
+    <div class="gallery">
+      <img src="https://i.pinimg.com/1200x/20/54/4c/20544cb03d634b2cbc375a3f6f6d0197.jpg" 
+           alt="Mahatma Gandhi" 
+           data-name="Mahatma Gandhi" 
+           data-bio="Father of the Nation, pioneer of non-violence and freedom struggle.">
+      <img src="https://i.pinimg.com/736x/94/25/0f/94250f1c7e01df1911b028ec0656e3f0.jpg" 
+           alt="Jawaharlal Nehru" 
+           data-name="Jawaharlal Nehru" 
+           data-bio="India’s first Prime Minister, architect of modern India.">
+      <img src="https://i.pinimg.com/736x/96/5b/60/965b605cc8ac9d93c65c723441e4631e.jpg" 
+           alt="Subhas Chandra Bose" 
+           data-name="Subhas Chandra Bose" 
+           data-bio="Leader of Indian National Army, 'Give me blood, I will give you freedom'.">
+      <img src="https://i.pinimg.com/1200x/c0/cb/2a/c0cb2a8be5c9938dd2c60bd9a560a450.jpg" 
+           alt="Bhagat Singh" 
+           data-name="Bhagat Singh" 
+           data-bio="Revolutionary freedom fighter who sacrificed his life at a young age.">
+    </div>
+  </section>
+
+  <!-- Quotes Section -->
+  <section id="quotes">
+    <h2>Inspirational Quotes 💬</h2>
+    <div class="quotes">
+      <div class="quote-card">
+        <p>"Be the change that you wish to see in the world."</p>
+        <cite>Mahatma Gandhi</cite>
+      </div>
+      <div class="quote-card">
+        <p>"The best way to find yourself is to lose yourself in the service of others."</p>
+        <cite>Mahatma Gandhi</cite>
+      </div>
+      <div class="quote-card">
+        <p>"We have to create a history of India in the making of which all can take a legitimate pride."</p>
+        <cite>Jawaharlal Nehru</cite>
+      </div>
+      <div class="quote-card">
+        <p>"Give me blood, and I shall give you freedom."</p>
+        <cite>Subhas Chandra Bose</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- Facts Section -->
+  <section id="facts">
+    <h2>Independence Facts 📚</h2>
+    <div class="facts">
+      <div class="fact-card">
+        <h3>Two Nations</h3>
+        <p>India's independence in 1947 led to the creation of two countries: India and Pakistan.</p>
+      </div>
+      <div class="fact-card">
+        <h3>National Flag</h3>
+        <p>The Indian flag, or Tiranga, was adopted on July 22, 1947, designed by Pingali Venkayya.</p>
+      </div>
+      <div class="fact-card">
+        <h3>Longest Constitution</h3>
+        <p>India’s Constitution, enacted in 1950, is the longest written constitution in the world.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cultural Heritage Section -->
+  <section id="culture">
+    <h2>Cultural Heritage 🇮🇳</h2>
+    <div class="culture">
+      <div class="culture-card">
+        <img src="https://i.pinimg.com/1200x/07/1d/3b/071d3b4a5ebb658209e103bcb56a4fae.jpg" alt="Taj Mahal">
+        <h3>Taj Mahal</h3>
+        <p>A UNESCO World Heritage Site, this iconic monument symbolizes India's rich Mughal architecture.</p>
+      </div>
+      <div class="culture-card">
+        <img src="https://i.pinimg.com/1200x/00/0a/23/000a23f5d25e8bd5919fedd8aa1c1324.jpg" alt="Classical Dance">
+        <h3>Classical Dance</h3>
+        <p>Forms like Bharatanatyam and Kathak showcase India's diverse cultural traditions.</p>
+      </div>
+      <div class="culture-card">
+        <img src="https://i.pinimg.com/736x/20/27/db/2027dbd6df741188cbc3b4d04a0a41c9.jpg" alt="Festivals">
+        <h3>Festivals</h3>
+        <p>Diwali, Holi, and other festivals reflect India's vibrant and colorful cultural heritage.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Independence Milestones Section -->
+  <section id="milestones">
+    <h2>Independence Milestones 🗳️</h2>
+    <div class="milestones">
+      <div class="milestone-card">
+        <h3>Formation of Indian National Congress (1885)</h3>
+        <p>Founded by A.O. Hume, the Indian National Congress became the primary platform for India's independence movement, uniting leaders to demand self-governance and foster national consciousness.</p>
+      </div>
+      <div class="milestone-card">
+        <h3>Non-Cooperation Movement (1920-1922)</h3>
+        <p>Initiated by Mahatma Gandhi in response to the Jallianwala Bagh massacre, this movement encouraged Indians to boycott British goods, schools, and institutions, promoting swadeshi (self-reliance) and galvanizing widespread participation.</p>
+      </div>
+      <div class="milestone-card">
+        <h3>Civil Disobedience Movement (1930)</h3>
+        <p>Launched with Gandhi's Dandi Salt March, this campaign defied British salt laws, sparking nationwide protests. It highlighted non-violent resistance, drawing global attention to India's struggle for freedom.</p>
+      </div>
+      <div class="milestone-card">
+        <h3>Quit India Movement (1942)</h3>
+        <p>Launched on August 8, 1942, with Gandhi's "Do or Die" call, this mass movement demanded an immediate end to British rule. Despite severe repression, it unified Indians across regions and intensified the independence struggle.</p>
+      </div>
+      <div class="milestone-card">
+        <h3>Indian Independence Act (1947)</h3>
+        <p>Passed by the British Parliament, this act granted independence to India on August 15, 1947, partitioning the subcontinent into India and Pakistan. Jawaharlal Nehru's "Tryst with Destiny" speech marked the historic moment.</p>
+      </div>
+      <div class="milestone-card">
+        <h3>Constitution Adoption (1950)</h3>
+        <p>On January 26, 1950, India became a republic with the adoption of its Constitution, drafted under Dr. B.R. Ambedkar’s leadership. It established India as a sovereign, democratic nation with fundamental rights for all citizens.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- National Symbols Section -->
+  <section id="symbols">
+    <h2>National Symbols 🏛️</h2>
+    <div class="symbols">
+      <div class="symbol-card">
+        <img src="https://i.pinimg.com/736x/64/77/41/6477415386a33953a8d6888c900e87d6.jpg" alt="National Flag">
+        <h3>National Flag</h3>
+        <p>The Tiranga, adopted on July 22, 1947, features saffron for courage, white for peace, green for prosperity, and the Ashoka Chakra for righteousness. Designed by Pingali Venkayya, it symbolizes India's unity and independence.</p>
+      </div>
+      <div class="symbol-card">
+        <img src="https://i.pinimg.com/1200x/f8/41/f0/f841f05e7dccd7da926de1a0726508de.jpg" alt="National Emblem">
+        <h3>National Emblem</h3>
+        <p>Adopted on January 26, 1950, the emblem is derived from the Lion Capital of Ashoka at Sarnath, featuring four lions symbolizing power, courage, pride, and confidence, with the motto "Satyameva Jayate" (Truth Alone Triumphs).</p>
+      </div>
+      <div class="symbol-card">
+        <img src="https://i.pinimg.com/736x/54/ee/d2/54eed223d26ab2adfc08079639aac092.jpg" alt="National Anthem">
+        <h3>National Anthem</h3>
+        <p>"Jana Gana Mana," written by Rabindranath Tagore, was adopted as India’s national anthem in 1950. Sung in 52 seconds, it reflects India’s unity in diversity and its aspirations for freedom and harmony.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal Popup -->
+  <div id="leaderModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <img id="modal-img" src="" alt="">
+      <h3 id="modal-name"></h3>
+      <p id="modal-bio"></p>
     </div>
   </div>
 
-  <!-- Facts & Quotes -->
-  <div class="fact" id="fact"></div>
-  <div class="quote" id="quote"></div>
+  <!-- Quiz Section -->
+  <section id="quiz">
+    <h2>Take a Quiz ❓</h2>
+    <div class="quiz">
+      <p>Who is known as the "Iron Man of India"?</p>
+      <button onclick="checkAnswer('wrong')">Mahatma Gandhi</button>
+      <button onclick="checkAnswer('correct')">Sardar Vallabhbhai Patel</button>
+      <button onclick="checkAnswer('wrong')">Bhagat Singh</button>
+      <div id="quiz-result"></div>
+    </div>
+  </section>
 
-  <!-- Completion -->
-  <div class="completion" id="completion">🎉 Congratulations! You completed the celebration! 🇮🇳</div>
-  <div class="next" id="next" onclick="window.location.href='index1.html'">Restart Celebration ➝</div>
-</div>
+  <!-- Game Section -->
+  <section id="game">
+    <h2>Catch the Tiranga Game 🎮</h2>
+    <canvas id="gameCanvas" width="500" height="400"></canvas>
+  </section>
 
-<canvas id="particles"></canvas>
-<canvas id="fireworks"></canvas>
+  <button id="topBtn" 
+    style="display:none; position:fixed; bottom:20px; right:20px; 
+           background:#ff4500; color:#fff; border:none; padding:12px 20px; 
+           border-radius:50%; font-size:18px; cursor:pointer; 
+           z-index:1500; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+    ⬆
+  </button>
 
-<script>
-  // ========== Quiz Feature ==========
-  const quizData = [
-    {
-      question: "What is the color order of the Indian flag from top to bottom?",
-      options: ["Saffron, White, Green", "Green, White, Saffron", "White, Saffron, Green", "Saffron, Green, White"],
-      answer: 0
-    },
-    {
-      question: "Which chakra is in the center of the Tiranga?",
-      options: ["Dharma Chakra", "Ashoka Chakra", "Peace Chakra", "Innovation Chakra"],
-      answer: 1
-    },
-    {
-      question: "India gained independence in which year?",
-      options: ["1947", "1950", "1945", "1960"],
-      answer: 0
-    },
-    {
-      question: "Which programming language is popularly used for web animations?",
-      options: ["Python", "JavaScript", "C++", "Java"],
-      answer: 1
-    }
-  ];
+  <!-- Footer -->
+  <footer style="text-align:center; padding:20px; margin-top:40px; 
+                 background:linear-gradient(to right,#ff9933,#fff,#138808); 
+                 color:#000; font-weight:bold;">
+    🇮🇳 Made with ❤️ for India’s Independence Day | 2025
+  </footer>
 
-  const facts = [
-    "India is the world's largest democracy.",
-    "The Indian flag was adopted on 22 July 1947.",
-    "The Ashoka Chakra has 24 spokes representing progress.",
-    "India is home to the world's largest postal network."
-  ];
-
-  const quotes = [
-    "Freedom is not worth having if it does not include the freedom to make mistakes. – Gandhi",
-    "Be the change that you wish to see in the world. – Gandhi",
-    "Innovation distinguishes between a leader and a follower. – Steve Jobs",
-    "The future belongs to those who prepare for it today. – Malcolm X"
-  ];
-
-  let current = 0;
-  let score = 0;
-
-  const questionEl = document.getElementById('question');
-  const optionsEl = document.getElementById('options');
-  const scoreEl = document.getElementById('score');
-  const completionEl = document.getElementById('completion');
-  const nextEl = document.getElementById('next');
-  const factEl = document.getElementById('fact');
-  const quoteEl = document.getElementById('quote');
-
-  function loadQuestion(){
-    const q = quizData[current];
-    questionEl.textContent = q.question;
-    optionsEl.innerHTML = '';
-    q.options.forEach((opt,index)=>{
-      const li = document.createElement('li');
-      li.textContent = opt;
-      li.onclick = ()=>selectAnswer(index);
-      optionsEl.appendChild(li);
-    });
-    displayRandomFactQuote();
-  }
-
-  function selectAnswer(index){
-    const correct = quizData[current].answer;
-    if(index === correct){
-      score++;
-      createFirework(window.innerWidth/2, window.innerHeight/2);
-    }
-    scoreEl.textContent = `Score: ${score}`;
-    current++;
-    if(current < quizData.length){
-      loadQuestion();
-    } else {
-      quizEnd();
-    }
-  }
-
-  function quizEnd(){
-    document.getElementById('quizSection').style.display = 'none';
-    completionEl.style.display = 'block';
-    nextEl.style.display = 'block';
-  }
-
-  function displayRandomFactQuote(){
-    factEl.textContent = facts[Math.floor(Math.random()*facts.length)];
-    quoteEl.textContent = quotes[Math.floor(Math.random()*quotes.length)];
-  }
-
-  loadQuestion();
-
-  // ========== Drag & Drop Puzzle ==========
-  const puzzleContainer = document.getElementById('puzzleContainer');
-  let dragged = null;
-
-  puzzleContainer.addEventListener('dragstart', e => {
-    dragged = e.target;
-  });
-
-  puzzleContainer.addEventListener('dragover', e => e.preventDefault());
-
-  puzzleContainer.addEventListener('drop', e => {
-    e.preventDefault();
-    if(e.target.classList.contains('stripe') && dragged !== e.target){
-      let nodes = Array.from(puzzleContainer.children);
-      let draggedIndex = nodes.indexOf(dragged);
-      let targetIndex = nodes.indexOf(e.target);
-      if(draggedIndex < targetIndex){
-        puzzleContainer.insertBefore(dragged, e.target.nextSibling);
+  <script>
+    // Quiz logic
+    function checkAnswer(ans) {
+      let result = document.getElementById("quiz-result");
+      if(ans === "correct"){
+        result.innerHTML = "✅ Correct! Well done!";
+        result.style.color = "green";
       } else {
-        puzzleContainer.insertBefore(dragged, e.target);
+        result.innerHTML = "❌ Wrong! Try again!";
+        result.style.color = "red";
       }
-      checkPuzzle();
     }
-  });
 
-  function checkPuzzle(){
-    const stripes = Array.from(puzzleContainer.children);
-    if(stripes[0].id === 'stripe1' && stripes[1].id === 'stripe2' && stripes[2].id === 'stripe3'){
-      createFirework(window.innerWidth/2, window.innerHeight/2);
-      alert("Tiranga Flag Correctly Arranged! 🎉");
-    }
-  }
+    // Background Music Control
+    const bgMusic = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicBtn");
+    let musicPlaying = false;
 
-  // ========== Particles ==========
-  const partCanvas = document.getElementById('particles');
-  const partCtx = partCanvas.getContext('2d');
-  partCanvas.width = window.innerWidth;
-  partCanvas.height = window.innerHeight;
-
-  const colors = ["#ff9933","#ffffff","#138808"];
-  const particles = [];
-  const particleCount = 150;
-
-  for(let i=0;i<particleCount;i++){
-    particles.push({
-      x: Math.random()*partCanvas.width,
-      y: Math.random()*partCanvas.height,
-      radius: Math.random()*6+3,
-      color: colors[Math.floor(Math.random()*colors.length)],
-      speedX: (Math.random()-0.5)*1,
-      speedY: Math.random()*1 +0.5
+    musicBtn.addEventListener("click", () => {
+      if(musicPlaying){
+        bgMusic.pause();
+        musicBtn.textContent = "🎵 Play Music";
+      } else {
+        bgMusic.play();
+        musicBtn.textContent = "⏸ Pause Music";
+      }
+      musicPlaying = !musicPlaying;
     });
-  }
 
-  function animateParticles(){
-    partCtx.clearRect(0,0,partCanvas.width,partCanvas.height);
-    particles.forEach(p=>{
-      p.x += p.speedX;
-      p.y += p.speedY;
-      if(p.y>partCanvas.height)p.y=-p.radius;
-      if(p.x>partCanvas.width)p.x=0;
-      if(p.x<0)p.x=partCanvas.width;
-      partCtx.beginPath();
-      partCtx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-      partCtx.fillStyle = p.color;
-      partCtx.fill();
+    // Pause music when modal opens
+    document.querySelectorAll(".gallery img").forEach(img => {
+      img.addEventListener("click", () => {
+        if(musicPlaying) bgMusic.pause();
+      });
     });
-    requestAnimationFrame(animateParticles);
-  }
-  animateParticles();
 
-  window.addEventListener('resize',()=>{
-    partCanvas.width = window.innerWidth;
-    partCanvas.height = window.innerHeight;
-    fireCanvas.width = window.innerWidth;
-    fireCanvas.height = window.innerHeight;
-  });
+    // Resume music after modal closes
+    const closeBtn = document.querySelector(".modal .close");
+    closeBtn.addEventListener("click", () => {
+      if(musicPlaying) bgMusic.play();
+    });
 
-  // ========== Fireworks ==========
-  const fireCanvas = document.getElementById('fireworks');
-  const fireCtx = fireCanvas.getContext('2d');
-  fireCanvas.width = window.innerWidth;
-  fireCanvas.height = window.innerHeight;
+    // Scroll to Top Button
+    const topBtn = document.getElementById("topBtn");
+    window.onscroll = function() {
+      if(document.body.scrollTop > 300 || document.documentElement.scrollTop > 300){
+        topBtn.style.display = "block";
+      } else {
+        topBtn.style.display = "none";
+      }
+    };
+    topBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
 
-  class FireworkParticle {
-    constructor(x,y,color){
-      this.x=x;
-      this.y=y;
-      this.color=color;
-      this.radius=Math.random()*3+2;
-      this.angle=Math.random()*2*Math.PI;
-      this.speed=Math.random()*5+2;
-      this.life=100;
-      this.opacity=1;
+    // Simple game (catch falling flags)
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    let player = { x: 220, y: 350, width: 60, height: 20 };
+    let flag = { x: Math.random()*460, y: 0, size: 30 };
+    let score = 0;
+
+    document.addEventListener("keydown", e => {
+      if(e.key === "ArrowLeft" && player.x > 0) player.x -= 20;
+      if(e.key === "ArrowRight" && player.x < canvas.width-player.width) player.x += 20;
+    });
+
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // Player
+      ctx.fillStyle = "#000080";
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+      // Flag
+      ctx.fillStyle = "#ff9933";
+      ctx.fillRect(flag.x, flag.y, flag.size, flag.size/3);
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(flag.x, flag.y+flag.size/3, flag.size, flag.size/3);
+      ctx.fillStyle = "#138808";
+      ctx.fillRect(flag.x, flag.y+2*flag.size/3, flag.size, flag.size/3);
+      // Score
+      ctx.fillStyle = "#000";
+      ctx.fillText("Score: "+score, 10, 20);
     }
-    update(){
-      this.x+=Math.cos(this.angle)*this.speed;
-      this.y+=Math.sin(this.angle)*this.speed;
-      this.life--;
-      this.opacity=this.life/100;
+
+    function update() {
+      flag.y += 3;
+      if(flag.y > canvas.height){
+        flag.y = 0;
+        flag.x = Math.random()*460;
+      }
+      if(flag.y+flag.size > player.y && flag.x > player.x && flag.x < player.x+player.width){
+        score++;
+        flag.y = 0;
+        flag.x = Math.random()*460;
+      }
     }
-    draw(){
-      fireCtx.beginPath();
-      fireCtx.arc(this.x,this.y,this.radius,0,Math.PI*2);
-      fireCtx.fillStyle=`rgba(${this.color},${this.opacity})`;
-      fireCtx.fill();
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
     }
-  }
+    gameLoop();
 
-  let fireworks = [];
-  function createFirework(x,y){
-    const colors = ["255,153,51","19,136,8","0,0,128","255,255,255"];
-    const color = colors[Math.floor(Math.random()*colors.length)];
-    for(let i=0;i<50;i++){
-      fireworks.push(new FireworkParticle(x,y,color));
+    // Gallery Popup Logic
+    const modal = document.getElementById("leaderModal");
+    const modalImg = document.getElementById("modal-img");
+    const modalName = document.getElementById("modal-name");
+    const modalBio = document.getElementById("modal-bio");
+
+    document.querySelectorAll(".gallery img").forEach(img => {
+      img.addEventListener("click", () => {
+        modal.style.display = "flex";
+        modalImg.src = img.src;
+        modalName.textContent = img.dataset.name;
+        modalBio.textContent = img.dataset.bio;
+      });
+    });
+
+    closeBtn.addEventListener("click", () => modal.style.display = "none");
+    window.addEventListener("click", e => {
+      if(e.target === modal) modal.style.display = "none";
+    });
+
+    // Dark mode toggle
+    const toggleBtn = document.getElementById("darkToggle");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      toggleBtn.textContent = document.body.classList.contains("dark") ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+
+    const music = document.getElementById("bgMusic");
+    music.addEventListener("play", () => {
+      localStorage.setItem("musicPlaying", "true");
+    });
+    music.addEventListener("pause", () => {
+      localStorage.setItem("musicPlaying", "false");
+    });
+
+    // Next page button (if exists)
+    const nextPageBtn = document.getElementById("nextPage");
+    if (nextPageBtn) {
+      nextPageBtn.addEventListener("click", () => {
+        if (!music.paused) localStorage.setItem("musicPlaying", "true");
+        else localStorage.setItem("musicPlaying", "false");
+        window.location.href = "index2.html";
+      });
     }
-  }
-
-  function animateFireworks(){
-    fireCtx.clearRect(0,0,fireCanvas.width,fireCanvas.height);
-    fireworks.forEach(p=>{p.update(); p.draw();});
-    fireworks = fireworks.filter(p=>p.life>0);
-    requestAnimationFrame(animateFireworks);
-  }
-  animateFireworks();
-
-  document.body.addEventListener('click',(e)=>{
-    createFirework(e.clientX,e.clientY);
-  });
-
-</script>
+  </script>
 </body>
 </html>
